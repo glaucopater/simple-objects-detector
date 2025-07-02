@@ -1,6 +1,4 @@
-**README**
-
-**Object Detection Web Application**
+## Object Detection Web Application
 
 This project is a web-based object detection application that uses deep learning models to identify objects in images. The application allows users to input a URL of an image, and it will detect and highlight the objects present in the image.
 
@@ -29,10 +27,22 @@ This project is a web-based object detection application that uses deep learning
 
 **Usage**
 
-1. Clone the repository and install the dependencies using `pip install -r requirements.txt`.
-2. Run the web application using `python web_app.py`.
-3. Open a web browser and navigate to `http://localhost:5000`.
-4. Input a URL of an image and click the "Run Detection" button to detect objects in the image.
+Conda or VirtualEnv are suggested
+
+## VirtualEnv setup
+
+  
+1. Clone the repository 
+2. Switch to a conda or virtual env:
+
+- python -m venv venv...
+- source ./venv/bin/activate or in Windows source .\venv\Scripts\activate
+
+and install the dependencies using `pip install -r requirements.txt`.
+
+3. Run the web application using `python web_app.py`.
+4. Open a web browser and navigate to `http://localhost:5000`.
+5. Input a URL of an image and click the "Run Detection" button to detect objects in the image.
 
 **License**
 
