@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Object Detection</title>
+  </head>
+  <body>
+    <h1>Object Detection</h1>
+    <div id="image-container" style="display: flex; flex-direction: column">
+      <input type="text" id="url" placeholder="Enter remote URL" />
+      <button onclick="runDetection()">Run Detection</button>
+      <textarea id="output" style="height: 200px"></textarea>
+    </div>
+
+    <script>
+      function runDetection() {
+        const url = document.getElementById("url").value;
+        // Make API call to run detection with the provided URL:
+        fetch("/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("output").innerHTML = JSON.stringify(
+              data,
+              null,
+              2
+            );
+
+            if (document.getElementById("image-url")) {
+              document.getElementById("image-url").remove();
+            }
+
+            if (document.getElementById("image-url-canvas")) {
+              document.getElementById("image-url-canvas").remove();
+            }
+
+            const image = new Image();
+            image.setAttribute("id", "image-url");
+            image.setAttribute("src", url);
+
+            image.onload = function () {
+              const canvas = document.createElement("canvas");
+              canvas.width = image.width;
+              canvas.height = image.height;
+              canvas.setAttribute("id", "image-url-canvas");
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(image, 0, 0);
+              data.detected_objects.forEach(function (object) {
+                const x = object.location[0];
+                const y = object.location[1];
+                const w = object.location[2] - x;
+                const h = object.location[3] - y;
+                ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, w, h);
+                ctx.font = "14px Arial";
+                ctx.fillStyle = "black";
+                ctx.textAlign = "left";
+                ctx.textBaseline = "top";
+                ctx.fillText(
+                  object.label + " (" + object.confidence.toFixed(2) + ")",
+                  x,
+                  y
+                );
+              });
+              document.getElementById("image-container").appendChild(canvas);
+            };
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+      function runDetection0() {
+        const url = document.getElementById("url").value;
+
+        if (document.getElementById("image-url")) {
+          document.getElementById("image-url").remove();
+        }
+
+        if (url !== "") {
+          const image = document.createElement("img");
+          image.setAttribute("id", "image-url");
+          image.setAttribute("src", url);
+
+          document.getElementById("image-container").appendChild(image);
+        }
+
+        // Make API call to run detection with the provided URL
+        // For example:
+        fetch("/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("output").value = JSON.stringify(data);
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>
