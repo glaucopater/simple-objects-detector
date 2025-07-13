@@ -1,34 +1,101 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Object Detection</title>
+    <title>Simple Object Detector</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin: 40px auto;
+        max-width: 800px;
+        padding: 0 20px;
+        background-color: #f9f9f9;
+        color: #333;
+      }
+
+      h1 {
+        text-align: center;
+        color: #1a1a1a;
+      }
+
+      #image-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      #url {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 10px 15px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #output {
+        width: 100%;
+        height: 200px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        font-family: monospace;
+        background-color: #fff;
+      }
+
+      canvas {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
   </head>
   <body>
-    <h1>Object Detection</h1>
-    <div id="image-container" style="display: flex; flex-direction: column">
-      <input type="text" id="url" placeholder="Enter remote URL" />
+    <h1>Simple Object Detector</h1>
+    <div id="image-container">
+      <input
+        type="text"
+        id="url"
+        placeholder="Enter remote URL"
+        value="https://random-image-pepebigotes.vercel.app/api/random-image"
+      />
       <button onclick="runDetection()">Run Detection</button>
-      <textarea id="output" style="height: 200px"></textarea>
+      <textarea id="output"></textarea>
     </div>
 
     <script>
       function runDetection() {
+        console.log("Running detection...");
         const url = document.getElementById("url").value;
 
-        if (document.getElementById("image-url")) {
-          document.getElementById("image-url").remove();
+        // Basic frontend validation
+        /*
+        const imageExtensions = [".jpg", ".jpeg", ".png", ".gif"];
+        if (!imageExtensions.some((ext) => url.toLowerCase().endsWith(ext))) {
+          alert(
+            "Please enter a valid image URL (e.g., ending in .jpg, .jpeg, .png, .gif)."
+          );
+          return;
         }
+          */
 
-        if (url !== "") {
-          const image = document.createElement("img");
-          image.setAttribute("id", "image-url");
-          image.setAttribute("src", url);
-
-          document.getElementById("image-container").appendChild(image);
-        }
-
-        // Make API call to run detection with the provided URL
-        // For example:
+        // Make API call to run detection with the provided URL:
         fetch("/analyze", {
           method: "POST",
           headers: {
@@ -36,24 +103,35 @@
           },
           body: JSON.stringify({ url: url }),
         })
-          .then((response) => response.json())
+          .then((response) => {
+            if (!response.ok) {
+              // Handle HTTP errors like 400 from the backend validation
+              return response.json().then((err) => {
+                throw new Error(err.error);
+              });
+            }
+            return response.json();
+          })
           .then((data) => {
-            console.log("Response:");
             document.getElementById("output").innerHTML = JSON.stringify(
               data,
               null,
               2
             );
 
-            if (document.getElementById("image-url")) {
-              document.getElementById("image-url").remove();
+            // Clean up previous images and canvases
+            const prevImage = document.getElementById("image-url");
+            if (prevImage) {
+              prevImage.remove();
             }
-
-            if (document.getElementById("image-url-canvas")) {
-              document.getElementById("image-url-canvas").remove();
+            const prevCanvas = document.getElementById("image-url-canvas");
+            if (prevCanvas) {
+              prevCanvas.remove();
             }
 
             const image = new Image();
+            // Add crossOrigin attribute to prevent canvas from becoming tainted
+            image.crossOrigin = "Anonymous";
             image.setAttribute("id", "image-url");
             image.setAttribute("src", url);
 
@@ -64,28 +142,43 @@
               canvas.setAttribute("id", "image-url-canvas");
               const ctx = canvas.getContext("2d");
               ctx.drawImage(image, 0, 0);
-              data.detected_objects.forEach(function (object) {
-                const x = object.location[0];
-                const y = object.location[1];
-                const w = object.location[2] - x;
-                const h = object.location[3] - y;
-                ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, w, h);
-                ctx.font = "14px Arial";
-                ctx.fillStyle = "black";
-                ctx.textAlign = "left";
-                ctx.textBaseline = "top";
-                ctx.fillText(
-                  object.label + " (" + object.confidence.toFixed(2) + ")",
-                  x,
-                  y
-                );
-              });
+
+              if (data.detected_objects) {
+                data.detected_objects.forEach(function (object) {
+                  const x = object.location[0];
+                  const y = object.location[1];
+                  const w = object.location[2] - x;
+                  const h = object.location[3] - y;
+                  ctx.strokeStyle = "rgba(0, 255, 0, 0.7)";
+                  ctx.lineWidth = 3;
+                  ctx.strokeRect(x, y, w, h);
+
+                  const label =
+                    object.label + " (" + object.confidence.toFixed(2) + "%)";
+                  ctx.font = "14px Arial";
+                  const textWidth = ctx.measureText(label).width;
+                  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                  ctx.fillRect(x, y, textWidth + 4, 20);
+
+                  ctx.fillStyle = "white";
+                  ctx.textAlign = "left";
+                  ctx.textBaseline = "top";
+                  ctx.fillText(label, x + 2, y + 2);
+                });
+              }
               document.getElementById("image-container").appendChild(canvas);
             };
+
+            image.onerror = function () {
+              alert(
+                "Error loading image. Please check the URL and ensure it's accessible and allows cross-origin requests."
+              );
+            };
           })
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred: " + error.message);
+          });
       }
     </script>
   </body>

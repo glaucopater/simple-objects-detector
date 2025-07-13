@@ -1,4 +1,4 @@
-## Object Detection Web Application
+## Simple Object Detector
 
 This project is a web-based object detection application that uses deep learning models to identify objects in images. The application allows users to input a URL of an image, and it will detect and highlight the objects present in the image.
 
