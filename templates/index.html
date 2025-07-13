@@ -14,7 +14,21 @@
     <script>
       function runDetection() {
         const url = document.getElementById("url").value;
-        // Make API call to run detection with the provided URL:
+
+        if (document.getElementById("image-url")) {
+          document.getElementById("image-url").remove();
+        }
+
+        if (url !== "") {
+          const image = document.createElement("img");
+          image.setAttribute("id", "image-url");
+          image.setAttribute("src", url);
+
+          document.getElementById("image-container").appendChild(image);
+        }
+
+        // Make API call to run detection with the provided URL
+        // For example:
         fetch("/analyze", {
           method: "POST",
           headers: {
@@ -24,6 +38,7 @@
         })
           .then((response) => response.json())
           .then((data) => {
+            console.log("Response:");
             document.getElementById("output").innerHTML = JSON.stringify(
               data,
               null,
@@ -69,36 +84,6 @@
               });
               document.getElementById("image-container").appendChild(canvas);
             };
-          })
-          .catch((error) => console.error("Error:", error));
-      }
-      function runDetection0() {
-        const url = document.getElementById("url").value;
-
-        if (document.getElementById("image-url")) {
-          document.getElementById("image-url").remove();
-        }
-
-        if (url !== "") {
-          const image = document.createElement("img");
-          image.setAttribute("id", "image-url");
-          image.setAttribute("src", url);
-
-          document.getElementById("image-container").appendChild(image);
-        }
-
-        // Make API call to run detection with the provided URL
-        // For example:
-        fetch("/analyze", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ url: url }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("output").value = JSON.stringify(data);
           })
           .catch((error) => console.error("Error:", error));
       }

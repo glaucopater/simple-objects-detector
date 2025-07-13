@@ -31,7 +31,6 @@ Conda or VirtualEnv are suggested
 
 ## VirtualEnv setup
 
-  
 1. Clone the repository 
 2. Switch to a conda or virtual env:
 
@@ -43,6 +42,31 @@ and install the dependencies using `pip install -r requirements.txt`.
 3. Run the web application using `python web_app.py`.
 4. Open a web browser and navigate to `http://localhost:5000`.
 5. Input a URL of an image and click the "Run Detection" button to detect objects in the image.
+
+## Docker Setup
+
+1. Build the Docker image:
+   ```bash
+   docker build -t object-detector .
+   ```
+2. Run the Docker container:
+   ```bash
+   docker run -p 5000:5000 object-detector
+   ```
+3. Open a web browser and navigate to `http://localhost:5000`.
+
+## Docker Compose Setup
+
+1. Make sure you have Docker Compose installed.
+2. Run the following command to build and start the service:
+   ```bash
+   docker-compose up
+   ```
+3. Open a web browser and navigate to `http://localhost:5000`.
+
+**Note:** The first time you run this, it will download the object detection model, which may take some time. Subsequent runs will be much faster as the model is cached in a Docker volume.
+
+
 
 **License**
 

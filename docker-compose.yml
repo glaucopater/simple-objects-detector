@@ -1,0 +1,14 @@
+version: '3.13-slim'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - huggingface_cache:/root/.cache/huggingface
+      - ./results:/app/results
+
+volumes:
+  huggingface_cache:

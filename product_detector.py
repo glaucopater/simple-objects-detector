@@ -54,6 +54,7 @@ class ObjectDetector:
         return detected_objects
 
     def run_detection(self, url, threshold=0.9):
+        print("Running detection...")
         start_time = time.time()
         image = self.load_image(url)
         results = self.detect_objects(image, threshold=threshold)
