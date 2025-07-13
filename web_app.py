@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -18,6 +18,18 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/proxy-image')
+def proxy_image():
+    url = request.args.get('url')
+    if not url:
+        return "Missing URL parameter", 400
+
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        return Response(response.iter_content(chunk_size=1024), content_type=response.headers['content-type'])
+    except requests.RequestException as e:
+        return str(e), 500
 
 @app.route('/analyze', methods=['POST'])
 def analyze():

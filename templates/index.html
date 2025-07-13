@@ -130,10 +130,8 @@
             }
 
             const image = new Image();
-            // Add crossOrigin attribute to prevent canvas from becoming tainted
-            image.crossOrigin = "Anonymous";
             image.setAttribute("id", "image-url");
-            image.setAttribute("src", url);
+            image.setAttribute("src", "/proxy-image?url=" + encodeURIComponent(url));
 
             image.onload = function () {
               const canvas = document.createElement("canvas");
