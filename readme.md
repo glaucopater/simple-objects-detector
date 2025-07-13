@@ -1,4 +1,4 @@
- # Simple Object Detector
+ # Simple objects detector
 
 This project is a web-based object detection application that uses the `facebook/detr-resnet-50` model from Hugging Face to identify objects in images. The application provides a user-friendly interface to enter an image URL, view the detected objects with bounding boxes, and see the analysis results in JSON format.
 

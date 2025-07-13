@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Object Detector</title>
+    <title>Simple objects detector</title>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -67,7 +67,7 @@
     </style>
   </head>
   <body>
-    <h1>Simple Object Detector</h1>
+    <h1>Simple objects detector</h1>
     <div id="image-container">
       <input
         type="text"
@@ -131,7 +131,10 @@
 
             const image = new Image();
             image.setAttribute("id", "image-url");
-            image.setAttribute("src", "/proxy-image?url=" + encodeURIComponent(url));
+            image.setAttribute(
+              "src",
+              "/proxy-image?url=" + encodeURIComponent(url)
+            );
 
             image.onload = function () {
               const canvas = document.createElement("canvas");
